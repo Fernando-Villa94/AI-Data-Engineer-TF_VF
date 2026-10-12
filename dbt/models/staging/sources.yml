@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: databricks_raw
+    catalog: workspace      # Cambia por tu catálogo de Databricks si se llama diferente
+    schema: catalog_raw     # El esquema donde Spark guardó tus tablas
+    tables:
+      - name: sales
+      - name: customers
+      - name: products
