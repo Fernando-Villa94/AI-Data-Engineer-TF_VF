@@ -123,7 +123,7 @@ Delta permite trabajar con tablas estructuradas directamente desde Databricks y 
 
 
 
-La capa RAW conserva los datos tal como fueron preparados para la carga. Sin embargo, no constituye una copia estrictamente inalterada de la fuente original, ya que parte de las transformaciones se realiza durante la extracción o preparación de los archivos.
+La capa RAW conserva los datos tal como fueron preparados para la carga. 
 
 
 
@@ -381,7 +381,7 @@ Se incorporaría una plataforma MLOps más completa (como Azure ML) si el modelo
 
 
 
-Utilizar Power BI Desktop como interfaz principal de consumo analítico, alimentado por las tablas de resultados generadas en catalog\_analytics. 
+Utilizar Power BI Desktop como interfaz principal de consumo analítico, alimentado por las tablas de resultados generadas en catalog\_analytics.
 
 
 

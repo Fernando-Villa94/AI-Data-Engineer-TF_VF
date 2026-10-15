@@ -181,7 +181,7 @@ variables_seleccionadas = [
 
 # Generamos el Score/Predicción usando la UDF de MLflow y la fecha de registro
 
-df_predictions = customer_360_final.select("*",predict_udf(*[F.col(c) for c in variables_seleccionadas]).alias("prediction"),f.current_timestamp().alias("fecha_registro"))
+df_predictions = customer_360_final.select("*",predict_udf(*[F.col(c) for c in variables_seleccionadas]).alias("prediction"),F.current_timestamp().alias("fecha_registro"))
 
 
 
@@ -197,11 +197,13 @@ print(f"📊 Total de registros procesados: {total_registros}")
 if total_registros == 0:
     raise ValueError(" CONTROL DE CALIDAD FALLADO: El DataFrame de predicciones está completamente vacío.")
 
-# 2. Prueba de No Nulidad en la columna 'prediction'
+# 2. Prueba de No Nulidad en la columna 'prediction' y 'target'
 # Contamos cuántos registros tienen valores válidos (no nulos) en esa columna
 registros_no_nulos = df_predictions.filter(F.col("prediction").isNotNull()).count()
 print(f" Registros con predicción no nula: {registros_no_nulos} de {total_registros}")
 
+registros_no_nulos = df_predictions.filter(F.col("target").isNotNull()).count()
+print(f" Registros con target no nulo: {registros_no_nulos} de {total_registros}")
 
 # 3. Validación de No Duplicados en Llave Compuesta (customer_id + periodo_analisis)
 # Agrupamos por la llave compuesta y contamos las ocurrencias de cada combinación
@@ -213,9 +215,28 @@ total_duplicados = duplicados_df.count()
 
 if total_duplicados > 0:
     print(f"CONTROL DE CALIDAD FALLADO: Se encontraron {total_duplicados} combinaciones duplicadas de 'customer_id' y 'periodo_analisis'.")
-    # Muestra  de los duplicados en los logs de Databricks para facilitar el debugging
-    duplicados_df.show(5, truncate=False)
+
     raise ValueError("Error de unicidad: La llave compuesta (customer_id, periodo_analisis) contiene registros duplicados.")
+
+    df_registros_duplicados = df_predictions.join(
+    duplicados_df.select("customer_id", "periodo_analisis"), 
+    on=["customer_id", "periodo_analisis"], 
+    how="inner"
+        )
+    
+    # 3.2 Guardar los registros duplicados en una vista temporal
+    df_registros_duplicados.createOrReplaceTempView("vista_temporal_duplicados")
+    print(f" Se guardaron {df_registros_duplicados.count()} registros duplicados en la vista temporal 'vista_temporal_duplicados'.")
+    df_registros_duplicados.show(5, truncate=False)
+    
+    # 3.3 Remover los duplicados del DataFrame original (dejando 0 registros de esas llaves)
+    df_predictions = df_predictions.join(
+        duplicados_df.select("customer_id", "periodo_analisis"), 
+        on=["customer_id", "periodo_analisis"], 
+        how="left_anti"
+    )
+    print("Los registros duplicados han sido eliminados del DataFrame principal.")
+
 else:
     print("Validación de unicidad exitosa: No existen llaves compuestas duplicadas.")
 
@@ -226,4 +247,5 @@ print("--- Todos los controles de calidad han sido aprobados. Procediendo a guar
 df_predictions.write \
     .format("delta") \
     .mode("overwrite") \
+    .option("mergeSchema", "true") \
     .saveAsTable("catalog_analytics.sales_customers_seguimiento")

@@ -283,10 +283,6 @@ Los principales controles son:
 
 
 
-Las capas RAW e INFERENCIA no cuentan actualmente con pruebas automatizadas específicas. La incorporación de controles adicionales en estas capas se considera una mejora futura.
-
-
-
 La arquitectura, las reglas de calidad y las decisiones tecnológicas se documentan en los archivos architecture, data\_dictionary, governance y decisions del repositorio.
 
 
@@ -418,7 +414,6 @@ Entre las posibles mejoras se encuentran:
 
 
 
-* Incorporar pruebas automatizadas en RAW e inferencia.
 * Implementar CI/CD para ejecutar validaciones antes de integrar cambios.
 * Automatizar y monitorear las ejecuciones mediante Jobs.
 * Incorporar monitoreo de calidad de datos y rendimiento del modelo.

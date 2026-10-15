@@ -32,11 +32,7 @@ En esta capa se conservan los nombres y valores de los campos extraídos, sin ap
 
 
 
-Aunque se conserva la estructura de los datos extraídos, existen transformaciones realizadas durante la generación de los archivos. Estas incluyen la selección de campos, la asignación de nombres, la clasificación de clientes, los ajustes de precios y cantidades, y la modificación de determinadas fechas.
-
-
-
-Por tanto, esta capa representa los datos de entrada del proyecto, pero no constituye una copia íntegra e inalterada de las tablas originales de AdventureWorksDW2019.
+Esta capa representa los datos de entrada del proyecto, pero no constituye una copia íntegra e inalterada de las tablas originales de AdventureWorksDW2019.
 
 
 
@@ -64,7 +60,7 @@ La extracción es lineal y se castea todo a string.
 
 |Campo|Definición|
 |-|-|
-|customer\_id<br />signup\_date<br />city<br />state<br />country<br />segment<br />birth\_date<br />gender<br />marital\_status<br />yearly\_income<br />total\_children<br />children\_at\_home<br />education<br />occupation<br />house\_owner<br />number\_cars<br />|Identificador único del cliente.<br />Fecha de primera compra del cliente.<br />Ciudad de residencia del cliente.<br />Estado o provincia de residencia.<br />País o región geográfica.<br />Segmento del cliente según la presencia de hijos en el hogar.<br />Fecha de nacimiento del cliente.<br />Género registrado del cliente.<br />Estado civil registrado del cliente.<br />Ingreso anual registrado del cliente.<br />Número total de hijos del cliente.<br />Número de hijos que viven en el hogar.<br />Nivel educativo registrado.<br />Ocupación registrada.<br />Indicador de propiedad de vivienda.<br />Número de automóviles que posee el cliente.<br />|
+|customer\_id<br />signup\_date<br />city<br />state<br />country<br />segment<br />birth\_date<br />gender<br />marital\_status<br />yearly\_income<br />total\_children<br />children\_at\_home<br />education<br />occupation<br />house\_owner<br />number\_cars<br /><br />fecha\_registro<br />|Identificador único del cliente.<br />Fecha de primera compra del cliente.<br />Ciudad de residencia del cliente.<br />Estado o provincia de residencia.<br />País o región geográfica.<br />Segmento del cliente según la presencia de hijos en el hogar.<br />Fecha de nacimiento del cliente.<br />Género registrado del cliente.<br />Estado civil registrado del cliente.<br />Ingreso anual registrado del cliente.<br />Número total de hijos del cliente.<br />Número de hijos que viven en el hogar.<br />Nivel educativo registrado.<br />Ocupación registrada.<br />Indicador de propiedad de vivienda.<br />Número de automóviles que posee el cliente.<br /><br />Tipo temporal devuelto por current\_timestamp()|
 
 
 
@@ -92,7 +88,7 @@ La extracción es lineal y se castea todo a string.
 
 |Campo|<br />Descripción<br />|
 |-|-|
-|product\_id<br />category<br />subcategory<br />brand<br />description<br />price|Identificador del producto.<br />Categoría comercial del producto.<br />Subcategoría comercial del producto.<br />Nombre del modelo asociado al producto.<br />Nombre descriptivo del producto.<br />Precio de referencia del producto.|
+|product\_id<br />category<br />subcategory<br />brand<br />description<br />Price<br />fecha\_registro|Identificador del producto.<br />Categoría comercial del producto.<br />Subcategoría comercial del producto.<br />Nombre del modelo asociado al producto.<br />Nombre descriptivo del producto.<br />Precio de referencia del producto.<br />Tipo temporal devuelto por current\_timestamp()|
 
 
 
@@ -118,7 +114,7 @@ La extracción es lineal y se castea todo a string.
 
 |Campo|<br />Descripción<br />|
 |-|-|
-|sale\_id<br />customer\_id<br />product\_id<br />timestamp<br />quantity<br />unit\_price<br />sales\_amount|Identificador de la línea de venta.<br />Identificador del cliente que realizó la compra.<br />Identificador del producto vendido.<br />Fecha de la transacción.<br />Cantidad de unidades vendidas.<br />Precio unitario ajustado de la transacción.<br />Importe total de la línea de venta.|
+|sale\_id<br />customer\_id<br />product\_id<br />timestamp<br />quantity<br />unit\_price<br />sales\_amount<br />fecha\_registro|Identificador de la línea de venta.<br />Identificador del cliente que realizó la compra.<br />Identificador del producto vendido.<br />Fecha de la transacción.<br />Cantidad de unidades vendidas.<br />Precio unitario ajustado de la transacción.<br />Importe total de la línea de venta.<br />Tipo temporal devuelto por current\_timestamp()|
 
 
 
@@ -150,7 +146,7 @@ Incorporación de una marca temporal de procesamiento mediante current\_timestam
 
 
 
-La marca temporal fecha\_ingesta\_staging identifica el momento de procesamiento del registro por el modelo correspondiente. No equivale necesariamente a la fecha de llegada original del archivo ni garantiza por sí sola la detección de cambios entre ejecuciones.
+La marca temporal fecha\_ingesta\_staging identifica el momento de procesamiento del registro por el modelo correspondiente. 
 
 
 
@@ -170,7 +166,7 @@ Granularidad esperada: un registro por cliente.
 
 
 
-|Campo	|Tipo de dato|Descripción / regla|
+|Campo|Tipo de dato|Descripción / regla|
 |-|-|-|
 |customer\_id<br />signup\_date<br />city<br />state<br />country<br />segment<br />birth\_date<br />gender<br />marital\_status<br />yearly\_income<br />total\_children<br />children\_at\_home<br />education<br />occupation<br />house\_owner<br />number\_cars<br />fecha\_ingesta\_staging|INT<br />DATE<br />STRING<br />STRING<br />STRING<br />STRING<br />DATE<br />STRING<br />STRING<br />DECIMAL(15,2)<br />INT<br />INT<br />STRING<br />STRING<br />INT<br />INT<br />Tipo temporal devuelto por current\_timestamp()|<br />Identificador del cliente.<br />Fecha de primera compra, tipificada como fecha.<br />Ciudad de residencia.<br />Estado o provincia.<br />País o región geográfica.<br />Clasificación derivada de la presencia de hijos en el hogar.<br />Fecha de nacimiento.<br />Género normalizado durante la extracción.<br />Estado civil normalizado durante la extracción.<br />Ingreso anual con dos decimales.<br />Número total de hijos.<br />Número de hijos en el hogar.<br />Nivel educativo.<br />Ocupación.<br />Indicador de propiedad de vivienda.<br />Número de automóviles.<br />Momento de procesamiento del modelo Staging.<br />|
 
@@ -419,7 +415,7 @@ Se agrupan las ventas por cliente y periodo mensual. Para cada grupo se calculan
 |Campo<br />|Tipo lógico esperado<br />|Descripción / regla<br />|
 |-|-|-|
 |customer\_id<br /><br />codmes<br />|INT<br /><br />INT<br />|Identificador del cliente procedente de stg\_sales.<br /><br />Periodo mensual con formato AAAAMM, derivado de la fecha de la transacción.<br />|
-|<br />monto\_mes<br /><br /><br />frec\_bikes\_mes<br /><br /><br />frec\_clothing\_mes<br /><br /><br />frec\_accessories\_mes<br />|Numérico o float<br /><br /><br />BIGINT o tipo entero equivalente<br /><br /><br />BIGINT o tipo entero equivalente<br /><br /><br />BIGINT o tipo entero equivalente<br />|Suma de sales\_amount, cuyo origen es stg\_sales.sales\_total, para el cliente y mes correspondientes.<br /><br />Número de líneas de venta asociadas a productos de la categoría bikes durante el mes.<br /><br />Número de líneas de venta asociadas a productos de la categoría clothing durante el mes.<br /><br />Número de líneas de venta asociadas a productos de la categoría accessories durante el mes.<br />|
+|<br />monto\_mes<br /><br /><br />frec\_bikes\_mes<br /><br /><br />frec\_clothing\_mes<br /><br /><br />frec\_accessories\_mes<br /><br /><br />Tipo temporal devuelto por current\_timestamp()<br />|Numérico o float<br /><br /><br />BIGINT o tipo entero equivalente<br /><br /><br />BIGINT o tipo entero equivalente<br /><br /><br />BIGINT o tipo entero equivalente<br /><br /><br />Tipo temporal devuelto por current\_timestamp()|Suma de sales\_amount, cuyo origen es stg\_sales.sales\_total, para el cliente y mes correspondientes.<br /><br />Número de líneas de venta asociadas a productos de la categoría bikes durante el mes.<br /><br />Número de líneas de venta asociadas a productos de la categoría clothing durante el mes.<br /><br />Número de líneas de venta asociadas a productos de la categoría accessories durante el mes.<br /><br />Momento de procesamiento del modelo intermediate.|
 
 
 
@@ -889,6 +885,7 @@ El resultado final contiene las siguientes columnas, ordenadas para facilitar su
 |frec\_bikes\_prom\_2m<br />|DOUBLE<br />|Promedio mensual de líneas de venta de bicicletas durante los dos meses de la ventana de corte.<br />|
 |customer\_id<br />|INT<br />|Identificador del cliente. Se conserva para trazabilidad y asociación de predicciones.<br />|
 |periodo\_analisis<br />|INT<br />|Periodo de corte utilizado para calcular las características, en formato AAAAMM.<br />|
+|fecha\_carga\_mart|Tipo temporal devuelto por current\_timestamp()|Momento de procesamiento de la tabla |
 
 
 
@@ -1037,6 +1034,7 @@ La tabla histórica conserva las columnas generadas por customer\_360.
 |frec\_bikes\_prom\_2m<br />|DOUBLE<br />|Frecuencia promedio mensual de líneas de venta de bicicletas durante la ventana de dos meses.<br />|
 |customer\_id<br />|INT<br />|Identificador del cliente.|
 |periodo\_analisis<br />|INT<br />|Periodo de corte al que corresponden las características.<br />|
+|fecha\_carga\_mart|Tipo temporal devuelto por current\_timestamp()|Momento de procesamiento de la tabla|
 
 
 
@@ -1126,6 +1124,7 @@ Propósito: consolidar las características de los clientes, el resultado observ
 |frec\_bikes\_prom\_2m<br /><br />|DOUBLE<br />|Promedio mensual de líneas de venta de bicicletas durante la ventana de dos meses.<br /><br />|
 |target<br />|INT, admite nulos<br />|Variable objetivo de recompra. Toma el valor 1 si se registra al menos una compra en los seis meses posteriores al periodo de análisis, 0 si no se registra ninguna y NULL cuando la ventana todavía no puede considerarse observable.<br />|
 |prediction<br />|DOUBLE<br />|Resultado de la inferencia del modelo de lightgbm para predecir si hay al menos una compra (1) de un cliente en los próximos 6 meses o no (0) en el periodo de mes analizado. <br />|
+|fecha registro|Tipo temporal devuelto por current\_timestamp()|Momento de procesamiento de la tabla|
 
 
 
@@ -1324,18 +1323,4 @@ Finalmente, el DataFrame se escribe en formato Delta mediante una operación ove
 
 
 Esto significa que cada ejecución reemplaza el contenido anterior de catalog\_analytics.sales\_customers\_seguimiento con el nuevo resultado completo y permite que el esquema de la tabla se actualice si cambia el esquema de salida.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

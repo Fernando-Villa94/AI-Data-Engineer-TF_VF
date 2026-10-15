@@ -18,15 +18,15 @@ Establecer las reglas de calidad, controles de integridad y criterios de validac
 
 |Capa<br />|Estrategia de control<br />|
 |-|-|
-|RAW (catalog\_raw)<br />|No cuenta con pruebas automatizadas. Conserva los datos cargados desde la fuente, la validación se da por el propio motor de databricks para la inferencia de tipo de dato.<br />|
+|RAW (catalog\_raw)<br />|Se valida el tipo de dato a ingestar de cada columna según la inferencia de esquema de los datos actuales (si existen), para evitar inconsistencias en las siguientes capas. Además se valida no nulidad de datos (debe haber registros en cada archivo a ingestar). <br />|
 |STAGING (catalog\_staging)<br />|Valida completitud de identificadores, unicidad de ventas e integridad referencial entre ventas, clientes y productos.<br />|
 |INTERMEDIATE (catalog\_intermediate)<br />|Valida la unicidad de la combinación cliente-periodo, la completitud de los principales indicadores mensuales y que los montos y frecuencias no sean negativos.<br />|
 |MARTS (catalog\_marts)<br />|Valida claves primarias, integridad referencial de ventas, completitud de métricas y ausencia de valores negativos en las variables utilizadas por el modelo.<br />|
-|ANALYTICS / INFERENCIA (catalog\_analytics)<br />|No cuenta con pruebas automatizadas implementadas. Se asume que las variables de entrada fueron validadas en las capas anteriores y que el modelo recibe datos con la estructura esperada.<br />|
+|ANALYTICS / INFERENCIA (catalog\_analytics)<br />|Cuenta con prueba de no nulidad de datos, no nulidad en la columna de predicción y target, así como pruebas de unicidad en llaves (se eliminan los duplicados y se almacena temporalmente en una vista).<br />|
 
 
 
-Nota: La ausencia de pruebas en RAW e inferencia responde al diseño actual del proyecto; no garantiza por sí sola que los datos de origen estén saneados ni que las predicciones sean correctas.
+
 
 
 
@@ -34,9 +34,18 @@ Nota: La ausencia de pruebas en RAW e inferencia responde al diseño actual del 
 
 
 
-
-
 **3.1. Staging**
+
+
+
+* Tipo de dato: los campos deben contener el tipo de dato esperado antes de ingestarse.
+* Completitud: se espera que los archivos tengan datos. 
+
+
+
+
+
+**3.2. Staging**
 
 
 
@@ -46,7 +55,7 @@ Nota: La ausencia de pruebas en RAW e inferencia responde al diseño actual del 
 
 
 
-**3.2. Intermediate**
+**3.3. Intermediate**
 
 
 
@@ -60,7 +69,7 @@ Modelo evaluado: int\_customer\_monthly\_aggregates.
 
 
 
-**3.3. Marts**
+**3.4. Marts**
 
 
 
@@ -71,6 +80,16 @@ Modelo evaluado: int\_customer\_monthly\_aggregates.
 * Completitud de variables: las variables seleccionadas de customer\_360 deben ser no nulas.
 * No negatividad: las métricas de recencia, montos, frecuencias e indicadores sociodemográficos numéricos seleccionados deben ser mayores o iguales a cero.
 * Precio: dim\_products.price no puede ser nulo.
+
+
+
+**3.5. Analytics**
+
+
+
+* Completitud: la cantidad de registros a ingestar no debe ser nula.
+* No nulidad: los campos target y prediction no deben tener nulos.
+* Unicidad: combinación 'customer\_id' y 'periodo\_analisis.
 
 
 
@@ -92,8 +111,6 @@ Las pruebas se ejecutan sobre los modelos configurados en cada capa. Los resulta
 
 
 
-* Incorporar pruebas en RAW para detectar cambios inesperados en la estructura y calidad de los datos de origen.
-* Incorporar pruebas en Analytics para validar la completitud de las predicciones, la unicidad de la combinación cliente-periodo y la presencia de valores válidos en target y prediction.
 * Añadir controles de rangos, consistencia de fechas y reglas de negocio para las variables principales.
 * Registrar y monitorear los resultados de las pruebas para facilitar la trazabilidad de errores y la supervisión del pipeline.
 
