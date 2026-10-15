@@ -134,5 +134,6 @@ select
     frec_bikes_prom_2m,
     -- Datos adicionales útiles para trazabilidad
     customer_id,
-    periodo_analisis
+    periodo_analisis,
+    current_timestamp() as fecha_carga_mart
 from final_features

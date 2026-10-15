@@ -4,7 +4,7 @@ models:
   - name: int_customer_monthly_aggregates
     description: "Agregaciones mensuales de transacciones por cliente y categorías clave para el modelo de ML."
     
-    # NUEVA SINTAXIS PARA DBT v2: Agrupamos los parámetros bajo el campo 'arguments'
+
     data_tests:
       - unique:
           column_name: "customer_id || '-' || cast(codmes as string)"
@@ -48,4 +48,4 @@ models:
           - not_null
           - es_mayor_o_igual_a:
               arguments:
-                valor_minimo: 0
+                valor_minimo: 0      

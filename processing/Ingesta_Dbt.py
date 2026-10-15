@@ -1,4 +1,11 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "6"
+# dependencies = [
+#   "dbt-databricks",
+# ]
+# ///
 # MAGIC %pip install dbt-databricks  
 
 # COMMAND ----------
@@ -12,7 +19,7 @@ from datetime import datetime
 
 # COMMAND ----------
 
-ruta_proyecto_dbt = "/Workspace/Repos/fvilla280494@gmail.com/AI-Data-Engineer-TF/dbt"
+ruta_proyecto_dbt = "/Workspace/Repos/fvilla280494@gmail.com/AI-Data-Engineer-TF_VF/dbt"
 os.environ["DBT_ACCESS_TOKEN"] = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
 
 # COMMAND ----------
@@ -44,7 +51,7 @@ argumentos_dbt = [
     "build", 
     "--select", "intermediate",      
     "--project-dir", ruta_proyecto_dbt,
-    "--profiles-dir", ruta_proyecto_dbt,
+    "--profiles-dir", ruta_proyecto_dbt,    
 ]
 
 
@@ -78,9 +85,20 @@ ultimo_anio = max_codmes_row // 100
 ultimo_mes = max_codmes_row % 100
 fecha_base = datetime(ultimo_anio, ultimo_mes, 1)
 
-# Generamos la lista de los últimos 6 meses a partir de la fecha base
+# Generamos la lista de los últimos  meses a partir de la fecha base
 meses_a_procesar = []
-for i in range(6): 
+
+dbutils.widgets.text("meses_back", "6", "Meses a procesar hacia atrás")
+
+# Leer el valor del widget y convertirlo a entero de forma segura
+try:
+    meses_back = int(dbutils.widgets.get("meses_back"))
+    print(f" Parámetro recibido: Se procesarán {meses_back} meses.")
+except ValueError:
+    print(" El valor del parámetro 'meses_back' no es un número válido. Se usará el valor por defecto: 6")
+    meses_back = 6
+
+for i in range(meses_back): 
     fecha_periodo = fecha_base - relativedelta(months=i)
     periodo_int = int(fecha_periodo.strftime("%Y%m"))
     meses_a_procesar.append(periodo_int)
@@ -89,7 +107,7 @@ for i in range(6):
 meses_a_procesar.sort()
 # ------------------------------------------------------------------------
 
-print(f" Periodos dinámicos a procesar (Ventana móvil de 6 meses): {meses_a_procesar}")
+print(f" Periodos dinámicos a procesar (Ventana móvil de {meses_back} meses): {meses_a_procesar}")
 print(" Iniciando procesamiento masivo histórico vía dbtRunner...")
 
 print("Ejecutando dim_products")

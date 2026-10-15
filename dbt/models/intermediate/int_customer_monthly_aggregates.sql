@@ -29,8 +29,9 @@ monthly_aggregates as (
         sum(case when category_clean = 'bikes' then 1 else 0 end) as frec_bikes_mes,
         sum(case when category_clean = 'clothing' then 1 else 0 end) as frec_clothing_mes,
         sum(case when category_clean = 'accessories' then 1 else 0 end) as frec_accessories_mes
+        
     from sales_with_categories
     group by 1, 2
 )
 
-select * from monthly_aggregates
+select *,current_timestamp() as fecha_ingesta_intermediate from monthly_aggregates

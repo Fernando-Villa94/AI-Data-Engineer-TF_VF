@@ -4,7 +4,7 @@ default:
       type: databricks
       catalog: workspace
       schema: catalog_marts
-      host: "dbc-70abe4be-51e0.cloud.databricks.com"
-      http_path: "/sql/1.0/warehouses/d640b4c62d7da706"
+      host: "{{ env_var('DBT_DATABRICKS_HOST', 'dbc-70abe4be-51e0.cloud.databricks.com') }}"
+      http_path: "{{ env_var('DBT_DATABRICKS_HTTP_PATH', '/sql/1.0/warehouses/d640b4c62d7da706') }}"
       token: "{{ env_var('DBT_ACCESS_TOKEN') }}"
   target: dev

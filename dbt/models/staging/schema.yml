@@ -4,7 +4,7 @@ models:
   - name: stg_products
     columns:
       - name: product_id
-        data_tests: # En v2 se prefiere 'data_tests' sobre 'tests'
+        data_tests: 
           - not_null # Regla 1: Completitud
 
   - name: stg_customers
