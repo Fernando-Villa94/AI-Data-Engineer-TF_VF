@@ -267,7 +267,7 @@ La puntuación prediction debe interpretarse de acuerdo con la configuración de
 
 
 
-Se incorporan pruebas automatizadas mediante dbt en las capas STAGING, INTERMEDIATE y MARTS.
+Se incorporan pruebas automatizadas mediante dbt en las capas STAGING, INTERMEDIATE y MARTS.Adicional se tienen validaciones para la capa RAW y Analytics previo a la ingesta de información. 
 
 
 
